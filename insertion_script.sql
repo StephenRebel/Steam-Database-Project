@@ -13,7 +13,6 @@ CREATE TABLE user (
     user_id integer primary key NOT NULL,
     username text NOT NULL,
     date_created integer NOT NULL, --Stored as UNIX date from epoch
-    linked_accounts text
 );
 
 CREATE TABLE friends (
@@ -49,7 +48,7 @@ CREATE TABLE achievement (
     achievement_number integer NOT NULL,
     game_id integer NOT NULL,
     title text NOT NULL,
-    description text,
+    description text NOT NULL,
     PRIMARY KEY (achievement_number, game_id),
     FOREIGN KEY (game_id) REFERENCES game(game_id)
 );
