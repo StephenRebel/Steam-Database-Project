@@ -50,38 +50,38 @@ def sanitize_sql_string(value):
 def parse_date(date_string):
     formats = ["%d %b, %Y", "%b %Y"]  # Add more formats here if needed
     if not date_string:
-        return -1
+        return 0
     for fmt in formats:
         try:
             return int(datetime.strptime(date_string, fmt).timestamp())
         except ValueError:
             pass
     file_error.write(f"Date format for '{date_string}' not recognized\n\n")
-    return -1
+    return 0
 
 def log_user_data(user):
     user_id = sanitize_sql_string(user['steamid'])
-    username = sanitize_sql_string(user['personaname'])
-    date = sanitize_sql_string(user['timecreated'])
+    username = sanitize_sql_string(user.get('personaname', 'None'))
+    date = sanitize_sql_string(user.get('timecreated', 0))
 
     file_users.write(f"INSERT INTO user (user_id, username, date_created) VALUES ({user_id}, '{username}', {date});\n")
 
 def log_friend_data(user_id, friend):
     user_id = sanitize_sql_string(user_id)
     friend_id = sanitize_sql_string(friend['steamid'])
-    date = sanitize_sql_string(friend['friend_since'])
+    date = sanitize_sql_string(friend.get('friend_since', 0))
 
     file_friends.write(f"INSERT INTO friends (user1, user2, date_friended) VALUES ({user_id}, {friend_id}, {date});\n")
 
 def log_game_data(game, aux_data):
-    pub_csv = sanitize_sql_string(",".join(aux_data["publishers"]) if aux_data.get("publishers", "") else "")
-    if aux_data["release_date"]["coming_soon"]:
-        rel_date = -1
+    pub_csv = sanitize_sql_string(",".join(aux_data.get("publishers", "")) if aux_data.get("publishers", "") else "")
+    if aux_data.get("release_date", {}).get("coming_soon", True):
+        rel_date = 0
     else:
-        rel_date = sanitize_sql_string(parse_date(aux_data["release_date"]["date"]))
+        rel_date = sanitize_sql_string(parse_date(aux_data.get("release_date", {}).get("date", "")))
     gen_csv = sanitize_sql_string(",".join([genre.get("description", "") for genre in aux_data.get("genres", [])]) if aux_data.get("genres", []) else "")
     game_id = sanitize_sql_string(game['appid'])
-    game_name = sanitize_sql_string(game['name'])
+    game_name = sanitize_sql_string(game.get('name', "None"))
     price = sanitize_sql_string(aux_data.get("price_overview", {}).get("initial", 0))
 
     file_games.write(f"INSERT INTO game (game_id, game_name, publishers, release_date, genres, price) VALUES ({game_id}, '{game_name}', '{pub_csv}', {rel_date}, '{gen_csv}', {price});\n")
@@ -89,7 +89,7 @@ def log_game_data(game, aux_data):
 def log_game_owned_data(user_id, game):
     user_id = sanitize_sql_string(user_id)
     game_id = sanitize_sql_string(game['appid'])
-    time_played = sanitize_sql_string(game['playtime_forever'])
+    time_played = sanitize_sql_string(game.get('playtime_forever', 0))
     last_play = sanitize_sql_string(game.get('rtime_last_played', 0))
 
     file_games_owned.write(f"INSERT INTO games_owned (user_id, game_id, time_played, date_last_played) VALUES ({user_id}, {game_id}, {time_played}, {last_play});\n")
@@ -97,7 +97,7 @@ def log_game_owned_data(user_id, game):
 def log_achievement_data(achievement, game_id, idx):
     achi_num = sanitize_sql_string(idx + 1)
     game_id = sanitize_sql_string(game_id)
-    title = sanitize_sql_string(achievement['displayName'])
+    title = sanitize_sql_string(achievement.get('displayName', "None"))
     desc = sanitize_sql_string(achievement.get('description', ''))
 
     file_achievements.write(f"INSERT INTO achievement (achievement_number, game_id, title, description) VALUES ({achi_num}, {game_id}, '{title}', '{desc}');\n")
@@ -106,7 +106,7 @@ def log_unlocked_achievement_data(user_id, achievement, idx, game_id):
     user_id = sanitize_sql_string(user_id)
     achi_num = sanitize_sql_string(idx + 1)
     game_id = sanitize_sql_string(game_id)
-    date = sanitize_sql_string(achievement['unlocktime'])
+    date = sanitize_sql_string(achievement.get('unlocktime', 0))
 
     file_unlocked_achievements.write(f"INSERT INTO unlocked_achievements (user_id, achievement_number, game_id, date_unlocked) VALUES ({user_id}, {achi_num}, {game_id}, {date});\n")
 
