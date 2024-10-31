@@ -7,7 +7,7 @@ from datetime import datetime
 API_KEY = os.getenv("STEAM_API_KEY")
 STARTING_USER_ID = "76561198279187763"
 MAX_USERS = 1  # Limit the number of unique users to process
-USERS_ADDED = 0
+USERS_ADDED = 1
 user_limit_reaced = False
 
 # API endpoints
@@ -23,7 +23,6 @@ queue = deque([STARTING_USER_ID])
 visited_users = set()
 visited_games = set()
 visited_achievements = set()
-visited_unlocked_achievements = set()
 
 # Open files for logging SQL statements
 storage_directory_path = "./generated_sql"
@@ -34,6 +33,7 @@ file_games = open(f"{storage_directory_path}/games.sql", "w", encoding="utf-8")
 file_games_owned = open(f"{storage_directory_path}/games_owned.sql", "w", encoding="utf-8")
 file_achievements = open(f"{storage_directory_path}/achievements.sql", "w", encoding="utf-8")
 file_unlocked_achievements = open(f"{storage_directory_path}/unlocked_achievements.sql", "w", encoding="utf-8")
+file_error = open(f"{storage_directory_path}/errors.err", "w", encoding="utf-8")
 
 # Anytime a string might have bad sql chars like "'" (apostrophee/single quote) must be escaped.
 def sanitize_sql_string(value):
@@ -46,6 +46,18 @@ def sanitize_sql_string(value):
         # Remove NULL characters
         value = value.replace("\0", "")
     return value
+
+def parse_date(date_string):
+    formats = ["%d %b, %Y", "%b %Y"]  # Add more formats here if needed
+    if not date_string:
+        return -1
+    for fmt in formats:
+        try:
+            return int(datetime.strptime(date_string, fmt).timestamp())
+        except ValueError:
+            pass
+    file_error.write(f"Date format for '{date_string}' not recognized\n\n")
+    return -1
 
 def log_user_data(user):
     user_id = sanitize_sql_string(user['steamid'])
@@ -66,7 +78,7 @@ def log_game_data(game, aux_data):
     if aux_data["release_date"]["coming_soon"]:
         rel_date = -1
     else:
-        rel_date = sanitize_sql_string(int(datetime.strptime(aux_data["release_date"]["date"], "%d %b, %Y").timestamp()))
+        rel_date = sanitize_sql_string(parse_date(aux_data["release_date"]["date"]))
     gen_csv = sanitize_sql_string(",".join([genre.get("description", "") for genre in aux_data.get("genres", [])]) if aux_data.get("genres", []) else "")
     game_id = sanitize_sql_string(game['appid'])
     game_name = sanitize_sql_string(game['name'])
@@ -78,7 +90,7 @@ def log_game_owned_data(user_id, game):
     user_id = sanitize_sql_string(user_id)
     game_id = sanitize_sql_string(game['appid'])
     time_played = sanitize_sql_string(game['playtime_forever'])
-    last_play = sanitize_sql_string(game['rtime_last_played'])
+    last_play = sanitize_sql_string(game.get('rtime_last_played', 0))
 
     file_games_owned.write(f"INSERT INTO games_owned (user_id, game_id, time_played, date_last_played) VALUES ({user_id}, {game_id}, {time_played}, {last_play});\n")
 
@@ -107,7 +119,7 @@ def fetch_user_data(user_id):
         log_user_data(user)
     return user
 
-def fetch_friends(user_id):
+def fetch_friends(user_id, USERS_ADDED):
     url = f"{BASE_URL_FRIENDS}{user_id}&relationship=friend"
     response = requests.get(url)
     friends = response.json().get("friendslist", {}).get("friends", [])
@@ -116,6 +128,7 @@ def fetch_friends(user_id):
         log_friend_data(user_id, friend)
         if friend_id not in visited_users:
             queue.append(friend_id)
+            USERS_ADDED += 1
     return friends
 
 # Games seem not being written
@@ -127,11 +140,12 @@ def fetch_owned_games(user_id):
         if game["appid"] not in visited_games:
             aux_url = f"{BASE_URL_GAME_INFO}{str(game['appid'])}&cc=ca&l=en"
             aux_response = requests.get(aux_url)
-            auxilary_game_data = aux_response.json().get(str(game["appid"]), {}).get("data", {})
-            if auxilary_game_data:
-                visited_games.add(game["appid"])
-                log_game_data(game, auxilary_game_data)
-                log_game_owned_data(user_id, game)
+            if aux_response:
+                auxilary_game_data = aux_response.json().get(str(game["appid"]), {}).get("data", {})
+                if auxilary_game_data:
+                    visited_games.add(game["appid"])
+                    log_game_data(game, auxilary_game_data)
+        log_game_owned_data(user_id, game)
     return games
 
 def fetch_game_achievements(game_id):
@@ -149,8 +163,7 @@ def fetch_player_achievements(user_id, game_id):
     response = requests.get(url)
     player_achievements = response.json().get("playerstats", {}).get("achievements", [])
     for idx, achievement in enumerate(player_achievements):
-        if (user_id, idx, game_id) not in visited_unlocked_achievements and achievement['achieved'] == 1:
-            visited_unlocked_achievements.add((user_id, idx, game_id))
+        if achievement['achieved'] == 1:
             log_unlocked_achievement_data(user_id, achievement, idx, game_id)
     return player_achievements
 
@@ -160,9 +173,6 @@ while queue:
     if current_user in visited_users:
         continue
     visited_users.add(current_user)
-    
-    if len(visited_users) >= MAX_USERS:
-        user_limit_reaced = True
 
     # Fetch and record user data
     fetch_user_data(current_user)
@@ -180,7 +190,10 @@ while queue:
     
     # Fetch and process friends, adding them to the BFS queue
     if not user_limit_reaced:
-        fetch_friends(current_user)
+        fetch_friends(current_user, USERS_ADDED)
+
+    if USERS_ADDED >= MAX_USERS:
+        user_limit_reaced = True
 
 # Close all files after logging
 file_users.close()
@@ -189,5 +202,6 @@ file_games.close()
 file_games_owned.close()
 file_achievements.close()
 file_unlocked_achievements.close()
+file_error.close()
 
 print("Data collection complete. SQL insertion files generated.")
