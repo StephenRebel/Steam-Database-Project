@@ -113,59 +113,66 @@ def log_unlocked_achievement_data(user_id, achievement, idx, game_id):
 def fetch_user_data(user_id):
     url = f"{BASE_URL_USER}{user_id}"
     response = requests.get(url)
-    data = response.json().get("response", {}).get("players", [])
-    if data:
-        user = data[0]
-        log_user_data(user)
-    return user
+    if response:
+        data = response.json().get("response", {}).get("players", [])
+        if data:
+            user = data[0]
+            log_user_data(user)
+        return user
 
-def fetch_friends(user_id, USERS_ADDED):
+def fetch_friends(user_id):
+    global USERS_ADDED
+
     url = f"{BASE_URL_FRIENDS}{user_id}&relationship=friend"
     response = requests.get(url)
-    friends = response.json().get("friendslist", {}).get("friends", [])
-    for friend in friends:
-        friend_id = friend["steamid"]
-        log_friend_data(user_id, friend)
-        if friend_id not in visited_users:
-            queue.append(friend_id)
-            USERS_ADDED += 1
-    return friends
+    if response:
+        friends = response.json().get("friendslist", {}).get("friends", [])
+        for friend in friends:
+            friend_id = friend["steamid"]
+            log_friend_data(user_id, friend)
+            if friend_id not in visited_users:
+                queue.append(friend_id)
+                USERS_ADDED += 1
+        return friends
 
 # Games seem not being written
 def fetch_owned_games(user_id):
     url = f"{BASE_URL_OWNED_GAMES}{user_id}&include_appinfo=true&include_played_free_games=true&format=json"
     response = requests.get(url)
-    games = response.json().get("response", {}).get("games", [])
-    for game in games:
-        if game["appid"] not in visited_games:
-            aux_url = f"{BASE_URL_GAME_INFO}{str(game['appid'])}&cc=ca&l=en"
-            aux_response = requests.get(aux_url)
-            if aux_response:
-                auxilary_game_data = aux_response.json().get(str(game["appid"]), {}).get("data", {})
-                if auxilary_game_data:
-                    visited_games.add(game["appid"])
-                    log_game_data(game, auxilary_game_data)
-        log_game_owned_data(user_id, game)
-    return games
+    if response:
+        games = response.json().get("response", {}).get("games", [])
+        for game in games:
+            if game["appid"] not in visited_games:
+                aux_url = f"{BASE_URL_GAME_INFO}{str(game['appid'])}&cc=ca&l=en"
+                aux_response = requests.get(aux_url)
+                if aux_response:
+                    auxilary_game_data = aux_response.json().get(str(game["appid"]), {}).get("data", {})
+                    if auxilary_game_data:
+                        visited_games.add(game["appid"])
+                        log_game_data(game, auxilary_game_data)
+            log_game_owned_data(user_id, game)
+        return games
 
 def fetch_game_achievements(game_id):
     url = f"{BASE_URL_GAME_SCHEMA}{game_id}"
     response = requests.get(url)
-    achievements = response.json().get("game", {}).get("availableGameStats", {}).get("achievements", [])
-    for idx, achievement in enumerate(achievements):
-        if (idx, game_id) not in visited_achievements:
-            visited_achievements.add((idx, game_id))
-            log_achievement_data(achievement, game_id, idx)
-    return achievements
+    if response:
+        achievements = response.json().get("game", {}).get("availableGameStats", {}).get("achievements", [])
+        for idx, achievement in enumerate(achievements):
+            if (idx, game_id) not in visited_achievements:
+                visited_achievements.add((idx, game_id))
+                log_achievement_data(achievement, game_id, idx)
+        return achievements
 
 def fetch_player_achievements(user_id, game_id):
     url = f"{BASE_URL_PLAYER_ACHIEVEMENTS}{user_id}&appid={game_id}"
     response = requests.get(url)
-    player_achievements = response.json().get("playerstats", {}).get("achievements", [])
-    for idx, achievement in enumerate(player_achievements):
-        if achievement['achieved'] == 1:
-            log_unlocked_achievement_data(user_id, achievement, idx, game_id)
-    return player_achievements
+    if response:
+        player_achievements = response.json().get("playerstats", {}).get("achievements", [])
+        for idx, achievement in enumerate(player_achievements):
+            if achievement['achieved'] == 1:
+                log_unlocked_achievement_data(user_id, achievement, idx, game_id)
+        return player_achievements
 
 # Main BFS loop with user limit check
 while queue:
@@ -190,10 +197,12 @@ while queue:
     
     # Fetch and process friends, adding them to the BFS queue
     if not user_limit_reaced:
-        fetch_friends(current_user, USERS_ADDED)
+        fetch_friends(current_user)
 
     if USERS_ADDED >= MAX_USERS:
         user_limit_reaced = True
+
+    print(USERS_ADDED)
 
 # Close all files after logging
 file_users.close()
@@ -205,3 +214,6 @@ file_unlocked_achievements.close()
 file_error.close()
 
 print("Data collection complete. SQL insertion files generated.")
+
+# NOTE: Will likely need to drop the date last played field from games to user relation as can only get this for myself.
+# NOTE: Potentially rework friend relation ships.
