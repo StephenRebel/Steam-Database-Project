@@ -1,6 +1,12 @@
 import google.generativeai as genai
 import typing_extensions as typing
+import sqlite3
 import os
+import json
+import random
+
+connection = sqlite3.connect('./SteamDB.db')
+cursor = connection.cursor()
 
 GOOGLE_KEY = os.getenv("GOOGLE_API_KEY")
 
@@ -9,7 +15,7 @@ You will be provided with the name of game and are asked to write a simulated re
 
 You are expected to write a review that will include:
 1. A short (3-10 word) title for the review;
-2. The user's rating of the game a single character 'P' or 'N' either positive or negative respectively;
+2. The user's rating of the game a single character 'P' or 'N' either positive or negative respectively (Pick one or the other 50-50);
 3. Review content which is a paragraph about the user's experience with the game;
 4. A date when the review was posted. This will be in UNIX format as time since last epoch, please attempt to make the date reasonable for the game.
 
@@ -27,15 +33,40 @@ model = genai.GenerativeModel(
 
 class Review(typing.TypedDict):
     title: str
-    content: str
     rating: str # Expecting single character 'P' or 'N'
+    content: str
     review_date: int # Expecting date in UNIX standard time since last epoch
 
-response = model.generate_content(
-    "",
-    generation_config=genai.GenerationConfig(
-        response_mime_type="application/json", response_schema=list[Review]
-    ),
-)
+cursor.execute("SELECT user_id FROM user")
+rows = cursor.fetchall()
+users = [row[0] for row in rows]
+with open("./generated_sql/reviews.sql", 'w', encoding="utf-8") as sql_file:
+    for user_id in users:
+        query = """
+        SELECT g.game_id, g.game_name 
+        FROM game AS g
+        JOIN games_owned AS go ON g.game_id = go.game_id
+        WHERE go.user_id = ?
+    """
 
-print(response)
+        cursor.execute(query, (user_id,))
+        games = cursor.fetchall()
+
+        subset_size = int(len(games) * 0.03)
+        subset_games = random.sample(games, subset_size)
+
+        for game in games:
+            response = response = model.generate_content(
+                f"Please generate a review for the game: '{game[1]}'.",
+                generation_config=genai.GenerationConfig(
+                    response_mime_type="application/json", response_schema=list[Review]
+                ),
+            )
+
+            review = json.loads(response.text)[0]
+
+            review_title = review['title'].replace("'", "''")
+            review_content = review['content'].replace("'", "''")
+
+            sql_str = f"INSERT INTO review (title, posting_user, posted_on_game, content, rating, review_date) VALUES ('{review_title}', 817324, 12342134, '{review_content}', '{review['rating']}', {review['review_date']});"
+            sql_file.write(sql_str + "\n")
