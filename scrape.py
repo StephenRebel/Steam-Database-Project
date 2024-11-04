@@ -217,3 +217,4 @@ print("Data collection complete. SQL insertion files generated.")
 
 # NOTE: Will likely need to drop the date last played field from games to user relation as can only get this for myself.
 # NOTE: Potentially rework friend relation ships.
+# NOTE: Seem to potentially lose games? Have a lot of games owned that didn't join properly on ids with games, less games than user owns. See if there exist gameids in games_owned without a game in the games table.
