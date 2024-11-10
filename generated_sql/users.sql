@@ -1,0 +1,18 @@
+INSERT INTO user (user_id, username, date_created) VALUES (76561198279187763, 'SABR22', 1453766625);
+INSERT INTO user (user_id, username, date_created) VALUES (76561197987487841, 'RumbleMuffin', 1168741104);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198169304586, 'Time2killlucifer', 1419193262);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198188877185, 'ThatF2PLoser', 1427762295);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198272336729, 'murky', 1451160063);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198272600152, 'Dahrius', 1451239297);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198272894110, 'SuperNutty', 0);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198310165356, 'Milmar', 1465521805);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198413112961, 'HamouzyTDS', 1502803791);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198838710139, 'MoldyCroc', 1527641734);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198850815028, 'mcintyredanial', 1532979544);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198934924737, 'Vesp', 1552665038);
+INSERT INTO user (user_id, username, date_created) VALUES (76561198980014157, 'Magenta', 1564095957);
+INSERT INTO user (user_id, username, date_created) VALUES (76561199042255295, 'Logudha Fru', 1585865669);
+INSERT INTO user (user_id, username, date_created) VALUES (76561199095734394, 'MysticMuslim', 1601762106);
+INSERT INTO user (user_id, username, date_created) VALUES (76561199206316619, 'IMAJGEN', 1631312739);
+INSERT INTO user (user_id, username, date_created) VALUES (76561199233358986, 'Zeunt', 1641692427);
+INSERT INTO user (user_id, username, date_created) VALUES (76561199588101386, 'olivator17', 1703398328);

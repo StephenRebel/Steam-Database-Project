@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Overview</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    nav {
+        background-color: #333; /* Dark background color for the navbar */
+        padding: 10px 20px;      /* Padding for spacing inside the navbar */
+        text-align: center;      /* Center the links horizontally */
+    }
+
+    /* Style for the links */
+    nav a {
+        color: white;             /* White text color */
+        text-decoration: none;    /* Remove underline from links */
+        margin: 0 15px;           /* Spacing between links */
+        font-size: 1.2em;         /* Slightly larger text for better visibility */
+        padding: 8px 12px;        /* Padding around each link for better clickable area */
+        border-radius: 5px;       /* Rounded corners for the links */
+        transition: background-color 0.3s, transform 0.3s; /* Smooth hover transition */
+    }
+
+    /* Hover effect */
+    nav a:hover {
+        background-color: #575757; /* Change background color on hover */
+        transform: scale(1.05);     /* Slightly enlarge the link when hovered */
+    }
+
+    /* Active link style */
+    nav a:active {
+        background-color: #444;    /* Darker background when link is active */
+    }
+
+    /* Responsive behavior: Stack links vertically on small screens */
+    @media (max-width: 768px) {
+        nav {
+        text-align: left; /* Align links to the left on smaller screens */
+        }
+
+        nav a {
+        display: block;    /* Stack links vertically */
+        margin: 10px 0;     /* Space out the links vertically */
+        }
+    }
+
+    /* Container for the description and tabs */
+    .container {
+      width: 80%;
+      margin: 0 auto;
+    }
+    
+    /* Style for the project description */
+    .description {
+      margin-bottom: 20px;
+      font-size: 1.2em;
+    }
+
+    /* Style for the tab buttons */
+    .tab-buttons {
+      display: flex;
+      cursor: pointer;
+      border-bottom: 2px solid #ccc;
+    }
+
+    .tab-buttons div {
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+      border-bottom: none;
+      flex: 1;
+      text-align: center;
+    }
+
+    /* Style for active/inactive tabs */
+    .tab-buttons .active {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+
+    /* Style for the tab content */
+    .tab-content {
+      display: none;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    #tab1 {
+        text-align: center;
+    }
+
+    #tab1 img {
+        height: 800px;
+        width: auto;
+        object-fit: contain;
+        max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/dbo">Database Overview</a> 
+        <a href="/dbip">Database Interaction Portal</a>
+    </nav>
+  <div class="container">
+    <h1>Database Overview</h1>
+
+    <!-- Project description blurb -->
+    <div class="description">
+      <p>This project involves creating a simplified version of a database inspired by the Steam Web API, which is used by Valve's Steam platform to manage information about games, users, and their interactions. The database will store key data related to four main entities: users, games, achievements, and reviews. User profiles will include basic details such as usernames, account creation dates, and friends, along with the date friend requests were accepted. Game data will encompass titles, publishers, and associated achievements. Achievements will be linked to both games and users, tracking what users have unlocked. Reviews, restricted to users who have played the game, will include ratings, titles, and content. The application will allow users to search for profiles, view games they play, achievements earned, reviews posted, and friends. Additionally, users can explore all available games and their details for future interest. This database aims to present an easy-to-navigate interface with valuable insights into a user's Steam presence.</p>
+    </div>
+
+    <!-- Tab buttons -->
+    <div class="tab-buttons">
+      <div class="tab-button active" onclick="openTab(event, 'tab1')">ER Model</div>
+      <div class="tab-button" onclick="openTab(event, 'tab2')">Table Schema</div>
+    </div>
+
+    <!-- Tab content for Tab 1 -->
+    <div id="tab1" class="tab-content active">
+        <img src="ERModel.png" alt="ER Model image">
+    </div>
+
+    <!-- Tab content for Tab 2 -->
+    <div id="tab2" class="tab-content">
+        <pre>
+CREATE TABLE user (
+    user_id integer primary key NOT NULL,
+    username text NOT NULL,
+    date_created integer NOT NULL --Stored as UNIX date from epoch
+);
+
+CREATE TABLE friends (
+    user1 integer NOT NULL,
+    user2 integer NOT NULL,
+    date_friended integer NOT NULL,
+    PRIMARY KEY (user1, user2),
+    FOREIGN KEY (user1) REFERENCES user(user_id),
+    FOREIGN KEY (user2) REFERENCES user(user_id),
+    CHECK (user1 <> user2)
+);
+
+CREATE TABLE game (
+    game_id integer primary key NOT NULL,
+    game_name text NOT NULL,
+    publishers text NOT NULL, -- comma seperated list
+    release_date integer NOT NULL, -- date since last epoch
+    genres text NOT NULL, -- comma seperated list
+    price integer NOT NULL -- in cents CAD
+);
+
+CREATE TABLE games_owned (
+    user_id integer NOT NULL,
+    game_id integer NOT NULL,
+    time_played integer NOT NULL, -- stored as number of minutes
+    PRIMARY KEY (user_id, game_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
+    FOREIGN KEY (game_id) REFERENCES game(game_id)
+);
+
+CREATE TABLE achievement (
+    achievement_number integer NOT NULL,
+    game_id integer NOT NULL,
+    title text NOT NULL,
+    description text NOT NULL,
+    PRIMARY KEY (achievement_number, game_id),
+    FOREIGN KEY (game_id) REFERENCES game(game_id)
+);
+
+CREATE TABLE unlocked_achievements (
+    user_id integer NOT NULL,
+    achievement_number integer NOT NULL,
+    game_id integer NOT NULL,
+    date_unlocked integer NOT NULL, -- date since last epoch
+    PRIMARY KEY (user_id, achievement_number, game_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
+    FOREIGN KEY (achievement_number, game_id) REFERENCES achievement(achievement_number, game_id)
+);
+
+CREATE TABLE review (
+    title text NOT NULL,
+    posting_user integer NOT NULL,
+    posted_on_game integer NOT NULL,
+    content text NOT NULL,
+    rating char NOT NULL CHECK (rating IN ('P', 'N')), -- rating positive (P) or negative (N)
+    review_date integer NOT NULL, -- time since last epoch
+    PRIMARY KEY (title, posting_user, posted_on_game),
+    FOREIGN KEY (posting_user) REFERENCES user(user_id),
+    FOREIGN KEY (posted_on_game) REFERENCES game(game_id)
+);
+        <pre>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript function to handle tab switching
+    function openTab(event, tabId) {
+      // Hide all tab content
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(content => content.classList.remove('active'));
+
+      // Remove 'active' class from all tab buttons
+      const tabButtons = document.querySelectorAll('.tab-button');
+      tabButtons.forEach(button => button.classList.remove('active'));
+
+      // Show the clicked tab content and set button as active
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+  </script>
+</body>
+</html>
