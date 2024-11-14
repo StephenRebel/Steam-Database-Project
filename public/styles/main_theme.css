@@ -1,0 +1,208 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f3f4f6;
+    color: #333;
+}
+
+/* Navbar */
+nav {
+    background-color: #333; /* Dark background color for the navbar */
+    padding: 10px 20px;      /* Padding for spacing inside the navbar */
+    text-align: center;      /* Center the links horizontally */
+}
+
+/* Style for the links */
+nav a {
+    color: white;             /* White text color */
+    text-decoration: none;    /* Remove underline from links */
+    margin: 0 15px;           /* Spacing between links */
+    font-size: 1.2em;         /* Slightly larger text for better visibility */
+    padding: 8px 12px;        /* Padding around each link for better clickable area */
+    border-radius: 5px;       /* Rounded corners for the links */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth hover transition */
+}
+
+/* Hover effect */
+nav a:hover {
+    background-color: #575757; /* Change background color on hover */
+    transform: scale(1.05);     /* Slightly enlarge the link when hovered */
+}
+
+/* Active link style */
+nav a:active {
+    background-color: #444;    /* Darker background when link is active */
+}
+
+/* Header Section */
+header {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    color: white;
+}
+header h1 {
+    font-size: 2.5em;
+    margin: 0;
+}
+header p {
+    font-size: 1.2em;
+    margin: 10px 0 20px;
+}
+header button {
+    font-size: 1em;
+    margin: 10px;
+    padding: 12px 20px;
+    color: #333;
+    background-color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+header button:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Features Section */
+#features {
+    padding: 40px 20px;
+    background-color: #fff;
+    text-align: center;
+}
+#features h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #444;
+}
+#features ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+/* Individual list item bubbles */
+#features li {
+    width: 200px;
+    font-size: 1em;
+    background-color: #f3f4f6;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+#features li:hover {
+    transform: translateY(-5px);
+}
+
+/* Feature bubble around the entire div */
+.feature-bubble {
+    background-color: #f0f8ff; /* Light blue background for the bubble */
+    border-radius: 15px; /* Rounded corners */
+    padding: 20px; /* Space inside the bubble */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    margin: 20px 0; /* Space between the bubbles */
+}
+
+.feature-bubble h2 {
+    margin-top: 0; /* Remove top margin */
+    font-size: 1.5rem; /* Larger heading */
+}
+
+.feature-bubble ul {
+    list-style-type: none; /* Remove list bullet points */
+    padding-left: 0; /* Remove left padding */
+}
+
+/* Container */
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* Header */
+.container h1 {
+    text-align: center;
+    font-size: 2.5em;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+/* Description Section */
+.description {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 1.2em;
+}
+
+/* Tabs */
+.tab-buttons {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-top: 20px;
+}
+.tab-buttons div {
+    padding: 15px 20px;
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+.tab-buttons .active {
+    background-color: #f0f0f0;
+    color: #444;
+}
+.tab-buttons div:hover {
+    background-color: #e0e0e0;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.tab-content.active {
+    display: block;
+}
+
+/* ER Model Image */
+#tab1 {
+    text-align: center;
+}
+#tab1 img {
+    height: 800px;
+    width: auto;
+    object-fit: contain;
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Preformatted SQL Code */
+#tab2 pre {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    overflow: auto;
+    color: #333;
+    font-size: 1em;
+    line-height: 1.4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}

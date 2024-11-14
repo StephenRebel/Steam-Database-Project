@@ -29,7 +29,7 @@ app.get('/dbo', (req, res) => {
 });
 
 app.get('/dbip', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'landing.html'));
+    res.sendFile(path.join(__dirname, 'views', 'dbInteraction.html'));
 });
 
 

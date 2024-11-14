@@ -4,108 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Database Overview</title>
-  <link rel="stylesheet" href="/styles.css">
-  <style>
-    nav {
-        background-color: #333; /* Dark background color for the navbar */
-        padding: 10px 20px;      /* Padding for spacing inside the navbar */
-        text-align: center;      /* Center the links horizontally */
-    }
-
-    /* Style for the links */
-    nav a {
-        color: white;             /* White text color */
-        text-decoration: none;    /* Remove underline from links */
-        margin: 0 15px;           /* Spacing between links */
-        font-size: 1.2em;         /* Slightly larger text for better visibility */
-        padding: 8px 12px;        /* Padding around each link for better clickable area */
-        border-radius: 5px;       /* Rounded corners for the links */
-        transition: background-color 0.3s, transform 0.3s; /* Smooth hover transition */
-    }
-
-    /* Hover effect */
-    nav a:hover {
-        background-color: #575757; /* Change background color on hover */
-        transform: scale(1.05);     /* Slightly enlarge the link when hovered */
-    }
-
-    /* Active link style */
-    nav a:active {
-        background-color: #444;    /* Darker background when link is active */
-    }
-
-    /* Responsive behavior: Stack links vertically on small screens */
-    @media (max-width: 768px) {
-        nav {
-        text-align: left; /* Align links to the left on smaller screens */
-        }
-
-        nav a {
-        display: block;    /* Stack links vertically */
-        margin: 10px 0;     /* Space out the links vertically */
-        }
-    }
-
-    /* Container for the description and tabs */
-    .container {
-      width: 80%;
-      margin: 0 auto;
-    }
-    
-    /* Style for the project description */
-    .description {
-      margin-bottom: 20px;
-      font-size: 1.2em;
-    }
-
-    /* Style for the tab buttons */
-    .tab-buttons {
-      display: flex;
-      cursor: pointer;
-      border-bottom: 2px solid #ccc;
-    }
-
-    .tab-buttons div {
-      padding: 10px 20px;
-      border: 1px solid #ccc;
-      border-bottom: none;
-      flex: 1;
-      text-align: center;
-    }
-
-    /* Style for active/inactive tabs */
-    .tab-buttons .active {
-      background-color: #f0f0f0;
-      font-weight: bold;
-    }
-
-    /* Style for the tab content */
-    .tab-content {
-      display: none;
-      padding: 20px;
-      border: 1px solid #ccc;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    #tab1 {
-        text-align: center;
-    }
-
-    #tab1 img {
-        height: 800px;
-        width: auto;
-        object-fit: contain;
-        max-width: 100%;
-    }
-  </style>
+  <link rel="stylesheet" href="styles/main_theme.css">
 </head>
 <body>
     <nav>
+        <a href="/dbo">Database Overview</a>
         <a href="/">Home</a>
-        <a href="/dbo">Database Overview</a> 
         <a href="/dbip">Database Interaction Portal</a>
     </nav>
   <div class="container">

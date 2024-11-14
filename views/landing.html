@@ -4,13 +4,39 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Landing Page</title>
+        <link rel="stylesheet" href="styles/main_theme.css">
     </head>
     <body>
-        <h1>Welcome to the Steam Database Project Landing Page</h1>
         <nav>
+            <a href="/dbo">Database Overview</a>
             <a href="/">Home</a>
-            <a href="/dbo">Database Overview</a> 
             <a href="/dbip">Database Interaction Portal</a>
         </nav>
+        <header>
+            <h1>Welcome to the Steam Database Project</h1>
+            <p>Explore user profiles, game stats, and achievements.</p>
+            <div>
+                <button onclick="location.href='/dbo'">Explore the Database</button>
+                <button onclick="location.href='/dbip'">Interact with Data</button>
+            </div>
+        </header>
+        <section id="features">
+            <div class="feature-bubble">
+                <h2>Database Features</h2>
+                <ul>
+                    <li><strong>Relational Database:</strong> Built using an Sqlite3 database backend.</li>
+                    <li><strong>Entity Relationships:</strong> Efficient normalized organization and retrieval with minimized redundancy and optimized relationships.</li>
+                    <li><strong>Distilled Information:</strong> Stores a curated subset of data from Steam Web API.</li>
+                </ul>
+            </div>
+            <div class="feature-bubble">
+                <h2>Application Features</h2>
+                <ul>
+                    <li><strong>User Profiles:</strong> Track game achievements and view connected friends.</li>
+                    <li><strong>Game Stats:</strong> Compare player stats and track playtime.</li>
+                    <li><strong>Achievements:</strong> Discover unlocked in-game achievements.</li>
+                </ul>
+            </div>
+        </section>
     </body>
 </html>
