@@ -206,3 +206,69 @@ header button:hover {
     line-height: 1.4;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
+
+/* Search Section */
+.search {
+    text-align: center;
+    margin: 20px 0;
+}
+.search form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.search input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+.search button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+.search button:hover {
+    background-color: #575757;
+}
+
+/* Results Section */
+#search-results {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+#search-results div {
+    width: 45%;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+#search-results h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #444;
+}
+#search-results ul {
+    list-style: none;
+    padding: 0;
+}
+#search-results li {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+#search-results li:hover {
+    background-color: #f0f0f0;
+}

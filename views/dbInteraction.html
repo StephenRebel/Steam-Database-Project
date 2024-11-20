@@ -3,9 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Database Portal</title>
+    <link rel="stylesheet" href="styles/main_theme.css">
 </head>
 <body>
-    
+    <nav>
+        <a href="/dbo">Database Overview</a>
+        <a href="/">Home</a>
+        <a href="/dbip">Database Interaction Portal</a>
+    </nav>
+    <main class="container">
+        <h1>Database Interaction Portal</h1>
+        <section class="search">
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="Search for users or games..." />
+                <button type="submit">Search</button>
+            </form>
+        </section>
+        <section id="search-results">
+            <div id="user-results">
+                <h2>Users</h2>
+                <ul id="user-list"></ul>
+            </div>
+            <div id="game-results">
+                <h2>Games</h2>
+                <ul id="game-list"></ul>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
