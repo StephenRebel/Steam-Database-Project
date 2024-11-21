@@ -33,11 +33,13 @@ function displayResults(data) {
     userDisplay.innerHTML = '';
     gameDisplay.innerHTML = '';
 
+    // Can look into storing data on web side and limitting shown info here so user can sort, or see next limited amount etc.
+
     // Render user data if any returned
     if (data.users && data.users.length > 0) {
         data.users.forEach(user => {
             let userEntry = document.createElement('li');
-            userEntry.innerHTML = `<a href="/user/?id=${user.id}">${user.name}</a>`;
+            userEntry.innerHTML = `<a href="/user/?id=${user.user_id}">${user.username}</a>`;
             userDisplay.appendChild(userEntry);
         });
     } else {
@@ -48,7 +50,7 @@ function displayResults(data) {
     if (data.games && data.games.length > 0) {
         data.games.forEach(game => {
             let gameEntry = document.createElement('li');
-            gameEntry.innerHTML = `<a href="/user/?id=${game.id}">${game.name}</a>`;
+            gameEntry.innerHTML = `<a href="/game/?id=${game.game_id}">${game.game_name}</a>`;
             gameDisplay.appendChild(gameEntry);
         });
     } else {
