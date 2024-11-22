@@ -37,19 +37,20 @@ app.get('/dbip', (req, res) => {
 
 // Write actual html for these two
 app.get('/user', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'userView.html'));
+    res.sendFile(path.join(__dirname, 'views', 'userProfile.html'));
 });
 
 app.get('/game', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'gameView.html'));
+    res.sendFile(path.join(__dirname, 'views', 'gamePage.html'));
 });
 
 // Post
 app.post('/queryDB', (req, res) => {
     const searchTerm = req.body.searchTerm;
 
-    const userQuery = 'SELECT user_id, username FROM user WHERE username LIKE ?';
-    const gameQuery = 'SELECT game_id, game_name FROM game WHERE game_name LIKE ?';
+    // Have to cast integer ids to text because javascript sucks and can't handle integers this large.
+    const userQuery = 'SELECT CAST(user_id AS TEXT) AS user_id, username FROM user WHERE username LIKE ?';
+    const gameQuery = 'SELECT CAST(game_id AS TEXT) AS game_id, game_name FROM game WHERE game_name LIKE ?';
 
     let users = [];
     let games = [];
@@ -80,10 +81,11 @@ app.post('/queryDB', (req, res) => {
 app.post('/user', (req, res) => {
     const userId = req.body.userId;
 
-    const userQuery = 'SELECT * FROM user WHERE user_id = ?';
-    const friendQuery = 'SELECT u.user_id, u.username FROM user u JOIN friends f ON (f.user1 = u.user_id OR f.user2 = u.user_id) WHERE (f.user1 = ? OR f.user2 = ?)';
+    // Again must cast to text because javascript is poorly designed
+    const userQuery = 'SELECT CAST(user_id AS TEXT) AS user_id, username, date_created FROM user WHERE user_id = ?';
+    const friendQuery = 'SELECT CAST(u.user_id AS TEXT) AS user_id, u.username, f.date_friended FROM user u JOIN friends f ON (f.user1 = u.user_id OR f.user2 = u.user_id) WHERE (f.user1 = ? OR f.user2 = ?) AND u.user_id <> ?';
     const reviewQuery = 'SELECT r.title, r.content, r.rating, r.review_date, g.game_name FROM review r JOIN game g ON r.posted_on_game = g.game_id WHERE r.posting_user = ?';
-    const gameQuery = 'SELECT g.game_id, g.game_name FROM games_owned go JOIN games g ON go.game_id = g.game_id WHERE go.user_id = ?';
+    const gameQuery = 'SELECT CAST(g.game_id AS TEXT) AS game_id, g.game_name FROM games_owned go JOIN game g ON go.game_id = g.game_id WHERE go.user_id = ?';
 
     let user = null;
     let friends = [];
@@ -98,7 +100,7 @@ app.post('/user', (req, res) => {
 
         user = userRow;
 
-        db.all(friendQuery, [userId, userId], (err, friendRows) => {
+        db.all(friendQuery, [userId, userId, userId], (err, friendRows) => {
             if (err) {
                 console.log("Error running friends SQL: ", err);
                 return res.status(500).json({ error: 'SQL reviews friends error.' });
@@ -130,17 +132,18 @@ app.post('/user', (req, res) => {
 });
 
 app.post('/game', (req, res) => {
-    const gameID = req.body.gameId;
+    const gameId = req.body.gameId;
 
-    const gameQuery = 'SELECT * FROM game WHERE game_id = ?';
-    const achievementQuery = 'SELECT a.achievement_number, a.title, a.description FROM achievement a WHERE a.game_id = ?';
+    // Further casting and my disdain for javascript
+    const gameQuery = 'SELECT CAST(game_id AS TEXT) AS game_id, game_name, publishers, release_date, genres, price FROM game WHERE game_id = ?';
+    const achievementQuery = 'SELECT CAST(a.achievement_number AS TEXT) AS achievement_number, a.title, a.description FROM achievement a WHERE a.game_id = ?';
     const reviewQuery = 'SELECT r.title, r.content, r.rating, r.review_date, u.user_name FROM review r JOIN user u ON r.posting_user = u.user_id WHERE g.posted_on_game = ?';
 
     let game = null;
     let achievements = [];
     let reviews = [];
 
-    db.get(gameQuery, [userId], (err, gameRow) => {
+    db.get(gameQuery, [gameId], (err, gameRow) => {
         if (err) {
             console.log("Error running game SQL: ", err);
             return res.status(500).json({ error: 'SQL game query error.' });
@@ -148,7 +151,7 @@ app.post('/game', (req, res) => {
 
         game = gameRow;
 
-        db.all(achievementQuery, [userId], (err, achievementRows) => {
+        db.all(achievementQuery, [gameId], (err, achievementRows) => {
             if (err) {
                 console.log("Error running achievements SQL: ", err);
                 return res.status(500).json({ error: 'SQL achievements query error.' });
@@ -156,7 +159,7 @@ app.post('/game', (req, res) => {
     
             achievements = achievementRows;
 
-            db.all(reviewQuery, [userId], (err, reviewRows) => {
+            db.all(reviewQuery, [gameId], (err, reviewRows) => {
                 if (err) {
                     console.log("Error running reviews SQL: ", err);
                     return res.status(500).json({ error: 'SQL reviews query error.' });

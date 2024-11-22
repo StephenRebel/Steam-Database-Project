@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="styles/main_theme.css">
+</head>
+<body>
+    <nav>
+        <a href="/dbo">Database Overview</a>
+        <a href="/">Home</a>
+        <a href="/dbip">Database Interaction Portal</a>
+    </nav>
+
+    <main id="user-main">
+        <!-- Display top section containing profile information and friends -->
+        <div class="top-section">
+            <section id="user-info-section">
+                <h1>User Profile</h1>
+                <div id="user-info">
+                    <p><strong>Username:</strong> <span id="username-field"></span></p>
+                    <p><strong>Account Created:</strong> <span id="user-created-date"></span></p>
+                </div>
+            </section>
+
+            <section id="friends-section">
+                <h2>Friends</h2>
+                <div id="friends-container">
+                    <ul id="friends-list"></ul>
+                </div>
+            </section>
+        </div>
+
+        <!-- Display bottom section containing user's games and reviews left -->
+        <div class="bottom-section">
+            <section id="games-section">
+                <h2>Owned Games</h2>
+                <div id="games-container">
+                    <ul id="games-list"></ul>
+                </div>
+            </section>
+
+            <section id="reviews-section">
+                <h2>User Reviews</h2>
+                <div id="reviews-container"></div>
+            </section>
+        </div>
+    </main>
+
+
+    <script src="scripts/userProfile.js"></script>
+</body>
+</html>

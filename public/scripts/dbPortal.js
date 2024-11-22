@@ -7,18 +7,19 @@ async function queryDatabase(event) {
     if(!search) return
 
     try {
-        const response = await fetch('./queryDB', {
+        const response = await fetch('/queryDB', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ searchTerm: search })
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`)
+            throw new Error(`HTTP Error: ${response.status}`);
         }
 
         let data = await response.json();
 
+        console.log(data);
         displayResults(data);
     } catch (error) {
         console.log("Database Query Error: ", error);
@@ -39,7 +40,7 @@ function displayResults(data) {
     if (data.users && data.users.length > 0) {
         data.users.forEach(user => {
             let userEntry = document.createElement('li');
-            userEntry.innerHTML = `<a href="/user/?id=${user.user_id}">${user.username}</a>`;
+            userEntry.innerHTML = `<a href="/user?id=${user.user_id}">${user.username}</a>`;
             userDisplay.appendChild(userEntry);
         });
     } else {
@@ -50,7 +51,7 @@ function displayResults(data) {
     if (data.games && data.games.length > 0) {
         data.games.forEach(game => {
             let gameEntry = document.createElement('li');
-            gameEntry.innerHTML = `<a href="/game/?id=${game.game_id}">${game.game_name}</a>`;
+            gameEntry.innerHTML = `<a href="/game?id=${game.game_id}">${game.game_name}</a>`;
             gameDisplay.appendChild(gameEntry);
         });
     } else {
