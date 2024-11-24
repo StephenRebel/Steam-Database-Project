@@ -79,8 +79,7 @@ function displayUserData(data, user_id) {
             reviewDetails.innerHTML = `<p><strong>Date:</strong> ${unixDateToStr(review.review_date)}</p><p><strong>Content:</strong> ${review.content}</p>`;
 
             reviewSummary.addEventListener('click', () => {
-                reviewDetails.style.display = 
-                    reviewDetails.style.display === 'none' ? 'block' : 'none';
+                reviewDetails.style.display = reviewDetails.style.display === 'none' ? 'block' : 'none';
             });
 
             reviewContainer.appendChild(reviewSummary);
