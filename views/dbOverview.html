@@ -22,8 +22,8 @@
 
     <!-- Tab stuff -->
     <div class="tab-buttons">
-      <div class="tab-button active" onclick="openTab(event, 'tab1')">ER Model</div>
-      <div class="tab-button" onclick="openTab(event, 'tab2')">Table Schema</div>
+      <div class="tab-button active" id="tab1-button">ER Model</div>
+      <div class="tab-button" id="tab2-button">Table Schema</div>
     </div>
 
     <div id="tab1" class="tab-content active">
@@ -100,18 +100,6 @@ CREATE TABLE review (
     </div>
   </div>
 
-  <script>
-    // JavaScript function to handle tab switching
-    function openTab(event, tabId) {
-      const tabContents = document.querySelectorAll('.tab-content');
-      tabContents.forEach(content => content.classList.remove('active'));
-
-      const tabButtons = document.querySelectorAll('.tab-button');
-      tabButtons.forEach(button => button.classList.remove('active'));
-
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
-    }
-  </script>
+  <script src="scripts/dbOverview.js"></script>
 </body>
 </html>

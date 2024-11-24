@@ -13,9 +13,37 @@
         <a href="/dbip">Database Interaction Portal</a>
     </nav>
 
-    <!-- Game page will have similar format to user page -->
-    <!-- Can probably set this page up in a way that we can render it from perspective of game for all and as game owned by user i.e. difference in the loading of achievements -->
+    <main id="user-main">
+        <!-- Display top section containing game information and achievements -->
+        <div class="top-section">
+            <section id="game-info-section">
+                <h1>Game Overview</h1>
+                <div id="game-info">
+                    <p><strong>Title:</strong> <span id="title-field"></span></p>
+                    <p><strong>Publishers:</strong> <span id="publishers-field"></span></p>
+                    <p><strong>Genre(s):</strong> <span id="genre-field"></span></p>
+                    <p><strong>Release Date:</strong> <span id="release-date-field"></span></p>
+                    <p><strong>Price:</strong> <span id="price-field"></span></p>
+                </div>
+            </section>
 
-    <script src="scripts/gamePage.html"></script>
+            <section id="achievements-section">
+                <h2>Achievements</h2>
+                <div id="achievements-container">
+                <!-- Achievements much like reviews -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Display bottom section containing user's games and reviews left -->
+        <div class="bottom-section">
+            <section id="reviews-section">
+                <h2>User Reviews</h2>
+                <div id="reviews-container"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="scripts/gamePage.js"></script>
 </body>
 </html>

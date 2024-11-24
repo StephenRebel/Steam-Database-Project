@@ -137,7 +137,7 @@ app.post('/game', (req, res) => {
     // Further casting and my disdain for javascript
     const gameQuery = 'SELECT CAST(game_id AS TEXT) AS game_id, game_name, publishers, release_date, genres, price FROM game WHERE game_id = ?';
     const achievementQuery = 'SELECT CAST(a.achievement_number AS TEXT) AS achievement_number, a.title, a.description FROM achievement a WHERE a.game_id = ?';
-    const reviewQuery = 'SELECT r.title, r.content, r.rating, r.review_date, u.user_name FROM review r JOIN user u ON r.posting_user = u.user_id WHERE g.posted_on_game = ?';
+    const reviewQuery = 'SELECT r.title, r.content, r.rating, r.review_date, u.username FROM review r JOIN user u ON r.posting_user = u.user_id WHERE r.posted_on_game = ?';
 
     let game = null;
     let achievements = [];
