@@ -9,6 +9,7 @@ The databse in question will simulate the use of something like SteamDB.
 const express = require('express');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
 
 app = express();
 const PORT = 3000 || process.env.PORT;
@@ -35,13 +36,38 @@ app.get('/dbip', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'dbInteraction.html'));
 });
 
-// Write actual html for these two
 app.get('/user', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'userProfile.html'));
 });
 
 app.get('/game', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'gamePage.html'));
+    const pageFile = path.join(__dirname, 'views', 'gamePage.html');
+
+    fs.readFile(pageFile, 'utf-8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error fetching html file');
+            return;
+        }
+
+        let modifiedHTML = data.replace('<!--INSERT_SCRIPT-->', '<script src="scripts/gamePage.js"></script>');
+
+        res.send(modifiedHTML);
+    });
+});
+
+app.get('/userGame', (req, res) => {
+    const pageFile = path.join(__dirname, 'views', 'gamePage.html');
+
+    fs.readFile(pageFile, 'utf-8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error fetching html file');
+            return;
+        }
+
+        let modifiedHTML = data.replace('<!--INSERT_SCRIPT-->', '<script src="scripts/userGame.js"></script>');
+
+        res.send(modifiedHTML);
+    });
 });
 
 // Post
@@ -136,7 +162,7 @@ app.post('/game', (req, res) => {
 
     // Further casting and my disdain for javascript
     const gameQuery = 'SELECT CAST(game_id AS TEXT) AS game_id, game_name, publishers, release_date, genres, price FROM game WHERE game_id = ?';
-    const achievementQuery = 'SELECT CAST(a.achievement_number AS TEXT) AS achievement_number, a.title, a.description FROM achievement a WHERE a.game_id = ?';
+    const achievementQuery = 'SELECT a.achievement_number, a.title, a.description FROM achievement a WHERE a.game_id = ?';
     const reviewQuery = 'SELECT r.title, r.content, r.rating, r.review_date, u.username FROM review r JOIN user u ON r.posting_user = u.user_id WHERE r.posted_on_game = ?';
 
     let game = null;
@@ -169,6 +195,39 @@ app.post('/game', (req, res) => {
 
                 res.json({ game, achievements, reviews })
             });
+        });
+    });
+});
+
+// Will act as a sort of follow up query to game data.
+app.post('/userGame', (req, res) => {
+    const userId = req.body.userId;
+    const gameId = req.body.gameId;
+
+    // SQL queries
+    const gamePlayQuery = 'SELECT gp.time_played FROM games_owned AS gp WHERE gp.user_id = ? AND gp.game_id = ?';
+    const unlockAchievsQuery = 'SELECT ua.achievement_number, ua.date_unlocked FROM unlocked_achievements AS ua WHERE ua.user_id = ? AND ua.game_id = ?';
+
+    gamePlay = null;
+    unlockAchievs = [];
+
+    db.get(gamePlayQuery, [userId, gameId], (err, gamePlayRow) => {
+        if (err) {
+            console.log("Error running game play SQL: ", err);
+            return res.status(500).json({ error: 'SQL game play query error.' });
+        }
+
+        gamePlay = gamePlayRow;
+
+        db.all(unlockAchievsQuery, [userId, gameId], (err, unlockAchievsRows) => {
+            if (err) {
+                console.log("Error running unlocked achievements SQL: ", err);
+                return res.status(500).json({ error: 'SQL unlocked achievements query error.' });
+            }
+
+            unlockAchievs = unlockAchievsRows;
+
+            res.json({ gamePlay, unlockAchievs });
         });
     });
 });

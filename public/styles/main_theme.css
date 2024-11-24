@@ -292,6 +292,7 @@ header button:hover {
     gap: 20px;
     padding: 20px;
     flex: 1;
+    position: relative;
 }
 
 #user-info-section, #friends-section {
@@ -425,4 +426,29 @@ ul li:hover {
     border: 1px solid #ddd;
     border-radius: 5px;
     display: none;
+}
+
+.achiev-container.locked {
+    background-color: #e0e0e0;
+    border: 1px solid #bbb;
+    color: #888;
+}
+
+#user-profile-back {
+    align-self: flex-start;
+    margin: 10px 0;
+    background: #fff;
+    color: #444;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 0.9em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+#user-profile-back:hover {
+    background: #f0f0f0;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
